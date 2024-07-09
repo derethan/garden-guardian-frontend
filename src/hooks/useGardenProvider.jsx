@@ -7,11 +7,10 @@ const GardenContext = createContext();
 const GardenProvider = ({ children }) => {
   const [gardens, setGardens] = useState(null);
   const [gardenGroups, setGardenGroups] = useState(null);
+  const [gardenPlants, setGardenPlants] = useState(null);
 
-  const [gardenPlants, setGardenPlants] = useState(() => {
-    // const allPlants = JSON.parse(localStorage.getItem("gardenPlants")) || [];
-    // return allPlants.filter((plant) => plant.userID === user.id);
-  });
+  // State to hold the result message for adding new Gardens/Groups/Plants
+  const [resultMessage, setResultMessage] = useState("");
 
   return (
     <GardenContext.Provider
@@ -22,6 +21,8 @@ const GardenProvider = ({ children }) => {
         setGardenGroups,
         gardenPlants,
         setGardenPlants,
+        resultMessage,
+        setResultMessage,
       }}
     >
       {children}

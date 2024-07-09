@@ -19,10 +19,12 @@ import { useEffect, useState } from "react";
 import { useValidate } from "../../hooks/useValidate";
 
 import { useGardenFunctions } from "../gardens/utils/useGardenFunctions";
+import { useGarden } from "../../contextProviders";
 
-export const AddGarden = ({ show, handleClose, setResultMessage }) => {
+export const AddGarden = ({ show, handleClose }) => {
   /************ Imports ***********************/
   const { createGarden } = useGardenFunctions();
+  const { setResultMessage } = useGarden();
 
   /************ State ***********************/
   const [formData, setFormData] = useState({
@@ -57,7 +59,7 @@ export const AddGarden = ({ show, handleClose, setResultMessage }) => {
 
       //Set the result message
       setResultMessage(addGarden);
-      
+
       // Reset the form data
       setFormData({
         gardenName: "",

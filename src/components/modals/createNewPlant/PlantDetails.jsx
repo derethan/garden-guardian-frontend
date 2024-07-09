@@ -10,6 +10,8 @@ import {
 import CircularProgress from "@mui/material/CircularProgress";
 import IconSeedling from "../../../assets/IconSeedling.png";
 
+import { useGardenFunctions } from "../../gardens/utils/useGardenFunctions";
+
 const PlantDetails = ({
   plant,
   variety,
@@ -17,6 +19,8 @@ const PlantDetails = ({
   setPlantProps,
   setEnableAddPlantButton,
 }) => {
+  const { getAIResults } = useGardenFunctions();
+
   const [manualMode, setManualMode] = useState(false); // Flag to indicate if the user is in manual mode
   const [displayForm, setDisplayForm] = useState(false); // Flag to indicate if the form should be displayed
   const [displayPlantProps, setDisplayPlantProps] = useState(false); // Flag to indicate if the plant properties should be displayed
@@ -28,61 +32,33 @@ const PlantDetails = ({
     setManualMode(false);
     setError(null);
 
+    setIsLoading(true);
+
     // Query the API to get the plant information
-    const generatedProperties = await getAIResults();
+    const generatedProperties = await getAIResults(
+      plant,
+      variety,
+      plantProps
+    ).finally(() => {
+      setIsLoading(false);
+    });
 
     if (!generatedProperties) {
       setError(
         "Root was unable to find any information on this plant, please check your plant name and variety and try again."
       );
       return;
-    } else {
-      // for each of the generated properties in the array, update the corresponding plantProp
-      let newPlantProps = [...plantProps];
-
-      newPlantProps.forEach((prop, index) => {
-        newPlantProps[index].value = generatedProperties[prop.title];
-      });
-
-      setPlantProps(newPlantProps);
-      setEnableAddPlantButton(true);
     }
-  };
+    
+    // for each of the generated properties in the array, update the corresponding plantProp
+    let newPlantProps = [...plantProps];
 
-  const getAIResults = async () => {
-    // Query the API to get the plant information
-    const URL = import.meta.env.VITE_API_URL;
+    newPlantProps.forEach((prop, index) => {
+      newPlantProps[index].value = generatedProperties[prop.title];
+    });
 
-    try {
-      setIsLoading(true);
-      const response = await fetch(URL + "ai/generatePlantInfo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          plantName: plant ? plant : null,
-          variety: variety ? variety : null,
-          properties: plantProps.map((prop) => {
-            return { title: prop.title, description: prop.description };
-          }),
-        }),
-      });
-
-      if (response.status === 201) {
-        return null;
-      }
-
-      const result = await response.json();
-
-      return result;
-
-      // Update the plantProps with the new information
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    setPlantProps(newPlantProps);
+    setEnableAddPlantButton(true);
   };
 
   return (
@@ -130,7 +106,11 @@ const PlantDetails = ({
                 <img src={IconSeedling} alt="AI Icon" width={"50px"} />
 
                 <Box pl={1}>
-                  <Typography variant="caption" color={"text.main"} fontWeight={'bold'}>
+                  <Typography
+                    variant="caption"
+                    color={"text.main"}
+                    fontWeight={"bold"}
+                  >
                     Ask Root!
                   </Typography>
                 </Box>
@@ -142,7 +122,7 @@ const PlantDetails = ({
             variant="caption"
             color={"text.subtitle"}
             fontWeight={"bold"}
-            sx={{ mt: 3, mb: 4, cursor: "pointer", textAlign: "center"}}
+            sx={{ mt: 3, mb: 4, cursor: "pointer", textAlign: "center" }}
             onClick={() => {
               setManualMode(!manualMode);
               setDisplayForm(!displayForm);
@@ -150,7 +130,7 @@ const PlantDetails = ({
               setEnableAddPlantButton(!manualMode);
             }}
           >
-            {'or'} <br />
+            {"or"} <br />
             (Enter the information manually)
           </Typography>
         </Box>

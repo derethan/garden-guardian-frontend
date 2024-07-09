@@ -135,7 +135,7 @@ export const PlantInfoContainer = ({
             </Box>
           ) : (
             <Box>
-              <h1>No Plant Selected</h1>
+              <h1>Select a Variety, or begin typing to add a new Variety</h1>
             </Box>
           )}
         </Box>

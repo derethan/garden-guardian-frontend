@@ -29,8 +29,9 @@ const NewPlantDialog = ({ open, toggleOpen, selectedPlant, setUpdateListOptions 
   const [skipped, setSkipped] = useState(new Set());
   const [enableAddPlantButton, setEnableAddPlantButton] = useState(false);
 
-  const [newPlantValue, setNewPlantValue] = useState("");
+  const [newPlantValue, setNewPlantValue] = useState(selectedPlant.id ? selectedPlant.label : "");
   const [newVarietyValue, setNewVarietyValue] = useState("");
+
   const [plantProps, setPlantProps] = useState([
     {
       title: "Description",
@@ -62,9 +63,6 @@ const NewPlantDialog = ({ open, toggleOpen, selectedPlant, setUpdateListOptions 
     variety: "",
   });
 
-  // useEffect(() => {
-  //   console.log('Selected Plant: ', selectedPlant);
-  // }, [selectedPlant]);
 
   const handleClose = () => {
     toggleOpen(false);
@@ -95,7 +93,7 @@ const NewPlantDialog = ({ open, toggleOpen, selectedPlant, setUpdateListOptions 
     //If the plant was added successfully, move to the next step
     if (addPlant.status === 200) {
       setUpdateListOptions(true);
-      // handleNext();
+      handleNext();
     }
   };
 

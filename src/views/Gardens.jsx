@@ -29,25 +29,20 @@ const Gardens = () => {
     gardenPlants,
     setGardenPlants,
   } = useGarden();
-  const { getGardens, getGardenGroups } = useGardenFunctions();
+  const { getGardens, getGardenGroups, getGardenPlants } = useGardenFunctions();
 
   const [ShowAddGardenModal, setShowAddGardenModal] = useState(false);
   const [ShowAddGardenGroupModal, setShowAddGardenGroupModal] = useState(false);
 
-  // State to hold the result message for adding new Gardens/Groups/Plants
-  const [resultMessage, setResultMessage] = useState("");
-
   // Fetch the garden data from the API
   useEffect(() => {
-    getGardens()
-      .then((gardenData) => {
+    Promise.all([getGardens(), getGardenGroups(), getGardenPlants()])
+      .then(([gardenData, gardenGroupData, gardenPlantData]) => {
         setGardens(gardenData);
+        setGardenGroups(gardenGroupData);
+        setGardenPlants(gardenPlantData);
       })
-      .then(() => {
-        getGardenGroups().then((gardenGroupData) => {
-          setGardenGroups(gardenGroupData);
-        });
-      });
+      .catch((error) => console.error("Error fetching data:", error));
   }, [user.id, token]);
 
   return (
@@ -57,7 +52,7 @@ const Gardens = () => {
         pb: 4,
       }}
     >
-      {gardens ? (
+      {gardens && gardens.length > 0 ? (
         <GardenWrapper
           gardenData={gardens}
           gardenGroups={gardenGroups}
@@ -66,7 +61,6 @@ const Gardens = () => {
           handleAddGroup={setShowAddGardenGroupModal}
           setGardens={setGardens}
           setGardenPlants={setGardenPlants}
-          setGardenGroups={setGardenGroups}
         />
       ) : (
         <>
@@ -80,7 +74,6 @@ const Gardens = () => {
       <AddGarden
         show={ShowAddGardenModal}
         handleClose={setShowAddGardenModal}
-        setResultMessage={setResultMessage}
       />
 
       {/* Add Garden Group Modal */}

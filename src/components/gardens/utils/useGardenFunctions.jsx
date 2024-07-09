@@ -5,7 +5,13 @@ export const useGardenFunctions = () => {
   const URL = import.meta.env.VITE_API_URL;
 
   const { user, token } = useAuth();
-  const { setGardens, setGardenGroups, setGardenPlants } = useGarden();
+  const {
+    gardenPlants,
+    gardenGroups,
+    setGardens,
+    setGardenGroups,
+    setGardenPlants,
+  } = useGarden();
   const { postData } = usePostRequest();
 
   const dialogMessage = {
@@ -44,7 +50,6 @@ export const useGardenFunctions = () => {
       console.error("Error connecting to the server", error);
     }
   };
-
   const getGardens = async () => {
     try {
       const response = await fetch(URL + `users/${user.id}/gardens`, {
@@ -65,9 +70,19 @@ export const useGardenFunctions = () => {
       console.error("Error fetching gardens", error);
     }
   };
-
   // TODO: Handle the case where the garden has groups and plants
   const deleteGarden = async (gardenID) => {
+    // Remove all groups associated with the gardenID
+    const deleteGroupRequests = gardenGroups
+      .filter((group) => group.gardenID === gardenID)
+      .map((group) => {
+        return deleteGardenGroup(group.groupID);
+      });
+
+    Promise.all(deleteGroupRequests).then((result) => {
+      console.log("All Groups Deleted", result);
+    });
+
     try {
       const result = await fetch(URL + `users/${user.id}/gardens/${gardenID}`, {
         method: "DELETE",
@@ -91,13 +106,6 @@ export const useGardenFunctions = () => {
     } catch (error) {
       console.error("Error connecting to the server", error);
     }
-
-    // //For each Group that matches the Garden ID, Run the deleteGardenGroup function
-    // gardenGroups.forEach((group) => {
-    //   if (group.gardenID === gardenID) {
-    //     deleteGardenGroup(group.groupID, setGardenGroups, setGardenPlants);
-    //   }
-    // });
   };
 
   /***GROUPS ********/
@@ -123,7 +131,6 @@ export const useGardenFunctions = () => {
       console.error("Error connecting to the server", error);
     }
   };
-
   const getGardenGroups = async () => {
     try {
       const response = await fetch(URL + `users/${user.id}/gardens/groups`, {
@@ -142,8 +149,19 @@ export const useGardenFunctions = () => {
       console.error("Error fetching garden groups", error);
     }
   };
-  // TODO: Handle the case where the group has plants
   const deleteGardenGroup = async (groupID) => {
+    //Remove all plants associated with the groupID
+    const deletePlantRequests = gardenPlants
+      .filter((plant) => plant.groupID === groupID)
+      .map((plant) => {
+        console.log("plant", plant);
+        return deleteGardenPlant(plant.gardenPlantID);
+      });
+
+    Promise.all(deletePlantRequests).then((result) => {
+      console.log("All Plants Deleted", result);
+    });
+
     // Make a DELETE request to the API to delete the garden group
     try {
       const request = await fetch(
@@ -173,9 +191,6 @@ export const useGardenFunctions = () => {
     } catch (error) {
       console.error("Error connecting to the server", error);
     }
-
-    //Remove all plants associated with the groupID
-    // deleteGardenPlant(null, setGardenPlants, groupID);
   };
 
   /***PLANTS***/
@@ -192,46 +207,66 @@ export const useGardenFunctions = () => {
         return dialogMessage.error;
       }
 
-      // // Update the state of the garden plants
-      // getGardenPlants().then((gardenPlantData) => {
-      //   setGardenPlants(gardenPlantData);
-      // });
+      // Update the state of the garden plants
+      getGardenPlants().then((gardenPlantData) => {
+        setGardenPlants(gardenPlantData);
+      });
 
-      console.log("result", result);
       return result.message;
     } catch (error) {
       console.error("Error connecting to the server", error);
     }
   };
-  const getGardenPlants = async () => {};
-  const deleteGardenPlant = (
-    plantID = null,
-    setGardenPlants,
-    groupID = null
-  ) => {
-    //Get the current garden plants from local storage
-    const gardenPlants = JSON.parse(localStorage.getItem("gardenPlants")) || [];
+  const getGardenPlants = async () => {
+    try {
+      const response = await fetch(URL + `users/${user.id}/gardens/plants`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    //Remove the garden plant from the garden plants array
-    const newGardenPlants = gardenPlants.filter((plant) =>
-      plantID ? plant.plantID !== plantID : plant.groupID !== groupID
-    );
-
-    //Save the new garden plants array to local storage
-    if (newGardenPlants.length === 0) {
-      localStorage.removeItem("gardenPlants");
-      setGardenPlants(null);
-    } else {
-      localStorage.setItem("gardenPlants", JSON.stringify(newGardenPlants));
-
-      //Update the state of the garden plants to match the user
-      const userPlants = newGardenPlants.filter(
-        (plant) => plant.userID === user.id
+      const data = await response.json();
+      if (response.status) {
+        return data.gardenPlants;
+      }
+    } catch (error) {
+      console.error("Error fetching garden plants", error);
+    }
+  };
+  const deleteGardenPlant = async (gardenPlantID) => {
+    // Make a DELETE request to the API to delete the garden plant
+    try {
+      const request = await fetch(
+        URL + `users/${user.id}/gardens/plants/${gardenPlantID}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setGardenPlants(userPlants);
+      const response = await request.json();
+      console.log("response", response);
+
+      if (!request.status) {
+        return dialogMessage.error;
+      }
+
+      // Update the state of the garden plants
+      getGardenPlants().then((gardenPlantData) => {
+        setGardenPlants(gardenPlantData);
+      });
+
+      return response.message;
+    } catch (error) {
+      console.error("Error connecting to the server", error);
     }
   };
 
+  //TODO: Remove this Function and replace with Database Update Functions for new Attributed to be added to the plant.
   // Function to Add Plant Attributes to the Local Storage and Garden Plant State
   const addPlantAttributes = (formData, property, plantData) => {
     //Get the current garden plants from local storage
@@ -259,7 +294,7 @@ export const useGardenFunctions = () => {
    *  Functions to Fetch Plant Data from the API
    * ***********************************************************/
 
-  // Function to Fetch the List of All Plants from the API
+  // Function to Fetch the List of All Plants from the Database
   const getAllPlants = async () => {
     try {
       const response = await fetch(URL + `api/plants`);
@@ -271,7 +306,7 @@ export const useGardenFunctions = () => {
     }
   };
 
-  // function to Fetch the varieties of the specified plant from the API
+  // function to Fetch all varieties of the specified plant from the Database
   const getVariety = async (plantName) => {
     try {
       const response = await fetch(URL + `api/plants/${plantName}/varieties`);
@@ -284,6 +319,7 @@ export const useGardenFunctions = () => {
     }
   };
 
+  // Function to Fetch the Plant/variety Data from the Database
   const getPlantData = async (plant, variety) => {
     const endPoint = variety
       ? `api/plants/${plant.id}/varieties/${variety.id}`
@@ -299,6 +335,7 @@ export const useGardenFunctions = () => {
     }
   };
 
+  // Function to Fetch the Plant Description from the API/AI Route
   const getPlantDescription = async (plantName, variety) => {
     let plant = variety ? plantName + ", " + variety : plantName;
 
@@ -311,11 +348,41 @@ export const useGardenFunctions = () => {
       console.error("Error:", error);
     }
   };
+
+  // Function to Fetch the Plant Properties from the API/AI Route
+  const getAIResults = async (plant, variety, plantProps) => {
+    try {
+      const response = await fetch(URL + "ai/generatePlantInfo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          plantName: plant ? plant : null,
+          varietyName: variety ? variety : null,
+          plantProperties: plantProps.map((prop) => {
+            return { title: prop.title, description: prop.description };
+          }),
+        }),
+      });
+
+      if (response.status === 400) {
+        return null;
+      }
+
+      const result = await response.json();
+      return result;
+
+      // Update the plantProps with the new information
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   /************************************************************
    *  Functions to add, update, delete plants and varieties to the database
    * ***********************************************************/
 
-  // Function to Add a New Plant to the Database
+  // Function to Add a New Plant/Variety to the Database
   // TODO: Ensure secuity by adding authentication to to the Post request (UsePostRequest Hook)
   // Ensure API is using correct verification middlewhere before proceeding to next route
   const addNewPlant = async (formData) => {
@@ -353,6 +420,7 @@ export const useGardenFunctions = () => {
     getVariety,
     getPlantData,
     getPlantDescription,
+    getAIResults,
     addNewPlant,
   };
 };

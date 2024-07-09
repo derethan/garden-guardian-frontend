@@ -64,7 +64,6 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
     const isValid = validateForm();
 
     if (isValid) {
-
       let plantData = {
         plant_name: selectedPlant.label,
         plant_id: selectedPlant.id,
@@ -140,7 +139,7 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
         setLoadingVarieties(false);
       });
     }
-  }, [selectedPlant]);
+  }, [selectedPlant, updateListOptions]);
 
   //Get the Info For the currently Selected Plant or Variety (If Available and Selected) From the database
   useEffect(() => {
@@ -269,7 +268,6 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
               name: newInputValue,
             });
             setPlantInfo(null);
-            setPlantInfo(null);
             setShowPlantInfo(false);
           }}
           filterOptions={(options, params) => {
@@ -368,7 +366,7 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
               }
             }}
             onInputChange={(event, newInputValue) => {
-              setSelectedVariety(newInputValue ? newInputValue : "");
+              // setSelectedVariety(newInputValue ? newInputValue : "");
             }}
             filterOptions={(options, params) => {
               const filtered = filter(options, params);
@@ -410,11 +408,11 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
         <NewPlantDialog
           open={openNewPlantDialog}
           toggleOpen={toggleOpenNewPlantDialog}
-          selectedPlant={formData} // pass formData as selectedPlant prop
+          selectedPlant={selectedPlant} // pass formData as selectedPlant prop
           setUpdateListOptions={setUpdateListOptions}
         />
       )}
-      
+
       {showPlantInfo && (
         <PlantInfoContainer
           selectedPlant={selectedPlant}

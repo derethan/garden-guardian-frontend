@@ -52,7 +52,6 @@ const GardenWrapper = ({
   handleAddGarden,
   handleAddGroup,
   setGardenPlants,
-  setGardenGroups,
 }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const { deleteGarden } = useGardenFunctions();
@@ -138,7 +137,7 @@ const GardenWrapper = ({
               setAnchorEl(null);
             }}
           >
-            Add a new Garden
+            Add a Garden
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -146,7 +145,7 @@ const GardenWrapper = ({
               setAnchorEl(null);
             }}
           >
-            Add a Plant Group
+            Add a Group
           </MenuItem>
 
           <MenuItem
@@ -195,8 +194,6 @@ const GardenWrapper = ({
                         group={group}
                         gardenPlants={gardenPlants}
                         handleAddPlant={setGardenPlants}
-                        setGardenGroups={setGardenGroups}
-                        setGardenPlants={setGardenPlants}
                       />
                     </Grid>
                   ))}

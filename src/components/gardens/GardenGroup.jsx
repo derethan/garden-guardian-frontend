@@ -21,7 +21,6 @@ const GardenGroup = ({
   group,
   gardenPlants,
   handleAddPlant,
-  setGardenPlants,
 }) => {
   const [ShowAddPlantModal, setShowAddPlantModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -40,6 +39,7 @@ const GardenGroup = ({
 
   return (
     <Card variant="light" sx={{ p: 2, mt: 2 }}>
+      {/* Group Header */}
       <Box
         sx={{
           display: "flex",
@@ -51,6 +51,7 @@ const GardenGroup = ({
           pb: 1,
         }}
       >
+        {/* Group Name */}
         <Typography
           variant="h6"
           fontWeight={"bold"}
@@ -70,7 +71,7 @@ const GardenGroup = ({
           </IconButton>
         </Tooltip>
 
-        {/* Options Menu for the Options Icon */}
+        {/* Options Menu for the Group Options Icon */}
         <Menu
           id="GardenGroupOptionsMenu"
           anchorEl={anchorEl}
@@ -114,11 +115,11 @@ const GardenGroup = ({
               <SmallPlantCard
                 key={index}
                 plant={plant}
-                setGardenPlants={setGardenPlants}
               />
             ))}
         </Box>
       ) : (
+        /* Placeholder for no plants */
         <Box
           pt={4}
           sx={{
