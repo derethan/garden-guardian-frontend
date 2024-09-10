@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import EditProperty from "./EditProperty";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -134,9 +134,21 @@ const MyPlant = ({ plantData }) => {
         width: { xs: "100%", md: "30%" },
       }}
     >
-      <Typography variant="h4" gutterBottom pt={4} color={"text.main"}>
-        My Plant
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <Typography variant="h4" gutterBottom pt={4} color={"text.main"}>
+          {plantData.customName}
+        </Typography>
+        <IconButton>
+          <EditIcon sx={{ fontSize: 14 }} />
+        </IconButton>
+      </Box>
 
       {/* Plant Properties - Renders the List of Properties under the My Plant Header */}
       <Box sx={{ p: { xs: 2, md: 0 } }}>

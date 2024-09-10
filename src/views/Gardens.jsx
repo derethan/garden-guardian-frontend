@@ -13,37 +13,29 @@ import GardenWrapper from "../components/gardens/GardenWrapper";
 //Hooks
 import { AddGarden, AddGardrenGroup } from "../imports";
 
-// UseAuth
-import { useAuth, useGarden } from "../contextProviders";
+// Import Context Providers
+import { useGarden } from "../contextProviders";
 
 // Garden Functions
 import { useGardenFunctions } from "../components/gardens/utils/useGardenFunctions";
 
 const Gardens = () => {
-  const { user, token } = useAuth();
   const {
     gardens,
     setGardens,
     gardenGroups,
-    setGardenGroups,
     gardenPlants,
     setGardenPlants,
   } = useGarden();
-  const { getGardens, getGardenGroups, getGardenPlants } = useGardenFunctions();
+  const { updateGardenData } = useGardenFunctions();
 
   const [ShowAddGardenModal, setShowAddGardenModal] = useState(false);
   const [ShowAddGardenGroupModal, setShowAddGardenGroupModal] = useState(false);
 
   // Fetch the garden data from the API
   useEffect(() => {
-    Promise.all([getGardens(), getGardenGroups(), getGardenPlants()])
-      .then(([gardenData, gardenGroupData, gardenPlantData]) => {
-        setGardens(gardenData);
-        setGardenGroups(gardenGroupData);
-        setGardenPlants(gardenPlantData);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  }, [user.id, token]);
+    updateGardenData();
+  }, []);
 
   return (
     <Container

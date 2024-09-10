@@ -22,6 +22,17 @@ export const useGardenFunctions = () => {
    *  Functions to Related to Gardens, Groups and Plants
    * ***********************************************************/
 
+  // Function to Update the Garden Data from the API
+  const updateGardenData = async () => {
+    Promise.all([getGardens(), getGardenGroups(), getGardenPlants()])
+      .then(([gardenData, gardenGroupData, gardenPlantData]) => {
+        setGardens(gardenData);
+        setGardenGroups(gardenGroupData);
+        setGardenPlants(gardenPlantData);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  };
+
   /***GARDENS ********/
   const createGarden = async (formData) => {
     //Add the userID to the formData
@@ -406,6 +417,7 @@ export const useGardenFunctions = () => {
   };
 
   return {
+    updateGardenData,
     createGarden,
     createGardenGroup,
     createGardenPlant,
