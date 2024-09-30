@@ -13,7 +13,7 @@ Project Garden Guardian, a comprehensive gardening platform for home gardeners a
 
 ## Overview
 
-Garden Guardian is an agricultural IoT platform built with React for users to monitor and manage their gardens and Greenhouses.
+Garden Guardian is an agricultural IoT platform built with React & Node for users to monitor and manage their gardens and Greenhouses.
 
 ## How to Use
 
@@ -81,4 +81,4 @@ New features, updates and refinement are being made regularly so be sure to chec
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU GENERAL PUBLIC LICENSE](LICENSE).
