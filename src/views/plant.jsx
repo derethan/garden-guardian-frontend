@@ -32,6 +32,7 @@ const Plant = () => {
     if (!gardenPlants) {
       updateGardenData();
     } else {
+      
       const plant = gardenPlants.find(
         (plant) => plant.gardenPlantID == plantID
       );
