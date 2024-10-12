@@ -29,7 +29,7 @@ const AddDevice = ({ display, setShowAddDeviceModal }) => {
   });
 
   //Create the post request hook
-  const [, , , , postData] = usePostRequest();
+  const {postData} = usePostRequest();
 
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

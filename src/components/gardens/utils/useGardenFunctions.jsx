@@ -337,7 +337,7 @@ export const useGardenFunctions = () => {
 
   // Function to Fetch the Plant Description from the API/AI Route
   const getPlantDescription = async (plantName, variety) => {
-    let plant = variety ? plantName + ", " + variety : plantName;
+    let plant = variety ? plantName.replace(/[^a-zA-Z0-9]/g, " ") + ", " + variety : plantName.replace(/[^a-zA-Z0-9]/g, " ");
 
     try {
       const response = await fetch(URL + `ai/plants/${plant}`);

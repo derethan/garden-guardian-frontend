@@ -125,7 +125,10 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
     const getVarieties = async () => {
       setLoadingVarieties(true);
 
-      const varietyData = await getVariety(formData.label); //useGardenFunctions
+      //Variety Name - Remove any special characters
+      const varietyName = formData.label.replace(/[^a-zA-Z0-9]/g, " ");
+
+      const varietyData = await getVariety(varietyName); //useGardenFunctions
 
       // Create a list of plant names for the Variety dropdown
       const varieties = varietyData.map((variety) => {
@@ -365,9 +368,9 @@ export const AddPlant = ({ show, handleClose, groupData }) => {
                 // }
               }
             }}
-            onInputChange={(event, newInputValue) => {
-              // setSelectedVariety(newInputValue ? newInputValue : "");
-            }}
+            // onInputChange={(event, newInputValue) => {
+            //   setSelectedVariety(newInputValue ? newInputValue : "");
+            // }}
             filterOptions={(options, params) => {
               const filtered = filter(options, params);
 
