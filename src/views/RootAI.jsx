@@ -26,8 +26,9 @@ const RootAI = () => {
       setLoading(true);
       setError(null);
 
+      console.log('sending message', userMessage.text);
       try {
-        const response = await postData(URL + `ai/${user.id}/root`, {
+        const response = await postData(URL + `rootai/${user.id}/chat`, {
           message: userMessage.text,
           conversation: conversation,
         });
